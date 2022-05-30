@@ -1,0 +1,22 @@
+version: '3.4'
+
+services:
+  ipservice.host:
+    image: ${DOCKER_REGISTRY-}ipservicehost
+    build:
+      context: .
+      dockerfile: src/IpService.Host/Dockerfile
+    environment:
+      - ConnectionStrings__Default=Server=db;Database=ipservice;User Id=sa;Password=MyPassword!23;
+      - ConnectionStrings__Migration=Server=db;User Id=sa;Password=MyPassword!23;
+      - ConnectionStrings__Hangfire=Server=db;Database=hangfire;User Id=sa;Password=MyPassword!23;
+    depends_on:
+      - db
+    restart: on-failure
+  db:
+    image: "mcr.microsoft.com/mssql/server"
+    environment:
+      SA_PASSWORD: "MyPassword!23"
+      ACCEPT_EULA: "Y"
+    ports:
+      - "1433:1433"
